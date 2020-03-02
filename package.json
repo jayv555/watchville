@@ -1,0 +1,19 @@
+{
+  "name": "watcher",
+  "version": "1.0.0",
+  "description": "An application to get popular posts from www.watchville.com",
+  "main": "index.js",
+  "scripts": {
+    "start": "node watcher.js"
+  },
+  "keywords": [
+    "watchville",
+    "extractor"
+  ],
+  "author": "VithushanJey",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "google-spreadsheet": "^3.0.9"
+  }
+}
