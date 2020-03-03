@@ -1,9 +1,18 @@
 const axios = require("axios");
 const { GoogleSpreadsheet } = require("google-spreadsheet");
-
+var CronJob = require("cron").CronJob;
 
 const URL = "https://api.watchville.co/v2/posts?context=popular";
-const date_now = new Date().toLocaleString().replace(/:/g, '-');
+const date_now = new Date().toLocaleString().replace(/:/g, "-");
+
+let job = new CronJob(
+  "0 0 10,22 * * *",
+  watcher(),
+  null,
+  true,
+  "America/New_York"
+);
+job.start();
 
 // date of the scrape, position in the top ten, title of the article , link and blog name
 const watcher = async () => {
@@ -12,10 +21,6 @@ const watcher = async () => {
   const popular_news_json_arr = await process_popular_news(response_data);
   //   console.log(popular_news_json_arr)
 
-  // Write to excel
-  // const xls = await json2xls(jobJSONArr);
-  // fs.writeFileSync("Jobs.xlsx", xls, "binary");
-  // write_to_excel(popular_news_json_arr);
   await write_to_google_sheets(popular_news_json_arr);
 };
 
@@ -81,5 +86,3 @@ const connect_google_spreadsheet = async () => {
     console.log(error);
   }
 };
-
-watcher();
