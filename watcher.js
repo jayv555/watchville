@@ -85,10 +85,9 @@ const connect_google_spreadsheet = async () => {
 };
 
 let job = new CronJob(
-  "* * * * * *",
+  "0 0 10,22 * * *",
   function() {
-    // watcher();
-    console.log("HIII")
+    watcher();
   },
   null,
   true,
