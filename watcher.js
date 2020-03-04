@@ -3,7 +3,7 @@ const { GoogleSpreadsheet } = require("google-spreadsheet");
 var CronJob = require("cron").CronJob;
 
 const URL = "https://api.watchville.co/v2/posts?context=popular";
-const date_now = new Date().toLocaleString().replace(/:/g, "-");
+const date_now = new Date().toLocaleString("en-US", {timeZone: "America/New_York"}).replace(/:/g, "-");
 
 // date of the scrape, position in the top ten, title of the article , link and blog name
 const watcher = async () => {
