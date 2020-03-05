@@ -3,7 +3,10 @@ const { GoogleSpreadsheet } = require("google-spreadsheet");
 var CronJob = require("cron").CronJob;
 
 const URL = "https://api.watchville.co/v2/posts?context=popular";
-const date_now = new Date().toLocaleString("en-US", {timeZone: "America/New_York"}).replace(/:/g, "-");
+
+// new Date()
+//   .toLocaleString("en-US", { timeZone: "America/New_York" })
+//   .replace(/:/g, "-");
 
 // date of the scrape, position in the top ten, title of the article , link and blog name
 const watcher = async () => {
@@ -13,13 +16,20 @@ const watcher = async () => {
   const popular_news_json_arr = await process_popular_news(response_data);
   //   console.log(popular_news_json_arr)
 
-  await write_to_google_sheets(popular_news_json_arr);
+  const date_now = await getDateTime();
+
+  await write_to_google_sheets(popular_news_json_arr, date_now);
 };
 
 const get_popular_news = async () => {
   let responses;
-  await axios.get(URL).then(res => (responses = res.data));
+  await axios
+    .get(URL)
+    .then(res => (responses = res.data))
+    .catch(error => console.log(error));
+
   console.log("get_popular_news done");
+
   return responses;
 };
 
@@ -31,7 +41,6 @@ const process_popular_news = async response_data => {
   for (let [i, post] of posts_arr.entries()) {
     let popular_news_json = {};
 
-    // popular_news_json.scrape_date = date_now;
     popular_news_json.position = i + 1;
     popular_news_json.title = post.title;
     popular_news_json.link = post.source_url;
@@ -50,7 +59,7 @@ const process_popular_news = async response_data => {
   return popular_news_json_arr;
 };
 
-const write_to_google_sheets = async popular_news_json_arr => {
+const write_to_google_sheets = async (popular_news_json_arr, date_now) => {
   try {
     const doc = await connect_google_spreadsheet();
 
@@ -84,8 +93,25 @@ const connect_google_spreadsheet = async () => {
   }
 };
 
+const getDateTime = async () => {
+  let date;
+  let time;
+
+  await axios
+    .get("http://worldtimeapi.org/api/timezone/America/New_York")
+    .then(res => {
+      let datetime = res.data.datetime;
+      date = datetime.split("T")[0];
+      time = datetime.split("T")[1].split(".")[0].replace(/:/g, "-");
+    })
+    .catch(error => console.log(error));
+
+  return date + ", " + time;
+};
+
+
 let job = new CronJob(
-  "0 0 10,23 * * *",
+  "0 0 10,22 * * *",
   function() {
     watcher();
   },
